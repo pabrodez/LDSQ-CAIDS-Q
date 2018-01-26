@@ -64,17 +64,29 @@ compareCols <- function(df1, df2) {
 compareCols(ad_dec_sub, ad_jun_sub)
 compareCols(ch_dec_sub, ch_jun_sub)
 
-# Remove invalid values and substitue with NA for consistency (i.e: "not answered" or "N/A")
+
+# Remove invalid values and substitue with NA for consistency. Change other values when necessary
 library(plyr)
 uniqueVals <- function(df1, df2) {
   commonNames <- names(df1)[names(df1) %in% names(df2)]
   list(df1 = sapply(df1[,commonNames], unique),
              df2 = sapply(df2[,commonNames], unique)) 
 }
-uniqueVals(ad_jun_sub, ad_dec_sub) #check
-uniqueVals(ad_dec_sub, ad_jun_sub)
 
-# adults
+# 3. Substitue invalid values for NAs. Change other values when necessary--------
+
+
+uniqueVals(ad_dec_sub, ad_jun_sub) #check
+
+# adults starting on dec
+ad_dec_sub$Area.of.residence <- as.factor(gsub(pattern = "Not provided", replacement = NA, as.character(ad_dec_sub$Area.of.residence)))
+ad_dec_sub$Relationship.to.alleged.perp. <- as.factor(gsub(pattern = "Other (see comments)", replacement = "Other", as.character(ad_dec_sub$Relationship.to.alleged.perp.)))
+ad_dec_sub$Assault.type.1 <- as.factor(gsub(pattern = "Penile anal", replacement = "Penile Anal", as.character(ad_dec_sub$Assault.type.1)))
+ad_dec_sub$Assault.type.2 <- as.factor(gsub(pattern = "Penile oral", replacement = "Penile Oral", as.character(ad_dec_sub$Assault.type.2)))
+ad_dec_sub$Assault.type.2 <- as.factor(gsub(pattern = "Penile anal", replacement = "Penile Anal", as.character(ad_dec_sub$Assault.type.2)))
+ad_dec_sub$Assault.type.4 <- as.factor(gsub(pattern = "digital vaginal", replacement = "Digital Vaginal", as.character(ad_dec_sub$Assault.type.2)))
+ad_dec_sub$Referrer <- as.factor(gsub(pattern = "Police Referrals", replacement = "Police", as.character(ad_dec_sub$Referrer)))
+ad_dec_sub$Referrer <- as.factor(gsub(pattern = "Self Referrals", replacement = "Self", as.character(ad_dec_sub$Referrer)))
 ad_dec_sub$DV.history <- as.factor(gsub(pattern = "yes", replacement = "Yes", as.character(ad_dec_sub$DV.history)))
 ad_dec_sub$DV.history <- as.factor(gsub(pattern = "Dash score", replacement = "Yes", as.character(ad_dec_sub$DV.history)))
 ad_dec_sub$DASH.Score <- as.factor(gsub(pattern = "Declined", replacement = NA, as.character(ad_dec_sub$DASH.Score)))
@@ -84,11 +96,186 @@ ad_dec_sub$Met.on.internet <- as.factor(gsub(pattern = "NO", replacement = "No",
 ad_dec_sub$Met.on.internet <- as.factor(gsub(pattern = "no", replacement = "No", as.character(ad_dec_sub$Met.on.internet)))
 ad_dec_sub$Met.on.internet <- as.factor(gsub(pattern = "YES", replacement = "Yes", as.character(ad_dec_sub$Met.on.internet)))
 ad_dec_sub$Met.on.internet <- as.factor(gsub(pattern = "yes", replacement = "Yes", as.character(ad_dec_sub$Met.on.internet)))
+
 ad_dec_sub$No..of.perps. <- ifelse(ad_dec_sub$No..of.perps. > 1, c("Multiple perps"), c("Single perp")) 
 ad_dec_sub$No..of.perps. <- as.factor(ad_dec_sub$No..of.perps.)
+
 ad_dec_sub$Emergency.contraception <- as.factor(gsub(ad_dec_sub$Emergency.contraception, pattern = "N/A", replacement = NA))
 ad_dec_sub$HIV.PEP <- as.factor(gsub(ad_dec_sub$HIV.PEP, pattern = "N/A", replacement = NA))
 ad_dec_sub$Hep.B <- as.factor(gsub(ad_dec_sub$Hep.B, pattern = "N/A", replacement = NA))
+
+# adults starting on jun
+ad_jun_sub$Gender <- as.factor(gsub(pattern = "female", replacement = "Female", as.character(ad_jun_sub$Gender)))
+ad_jun_sub$Area.of.residence <- as.factor(gsub(pattern = "No fixed abode", replacement = "No fixed above", as.character(ad_jun_sub$Area.of.residence)))
+# ad_jun_sub$DASH.Score is dicotomical: >14 or <14, or "Police DASH", which means Police hold the score, not known.
+# change ad_dec_sub$DASH.Score to >14 or <14 categories for consistency
+# Issue: there are values of 14 in ad_dec_sub$DASH.Score. Because d_jun_sub$DASH.Score is >14 or <14 there's no inclusion of value 14 in any of both categories, leaving the value outside.
+# Check presence of value 14 in ad_dec_sub$DASH.Score
+sort(summary(ad_dec_sub$DASH.Score), decreasing = TRUE) # there are 8 values of 14 and 328 NA's
+ad_jun_sub$DASH.Score <- as.factor(gsub(pattern = "Police DASH", replacement = NA, as.character(ad_jun_sub$DASH.Score)))
+ad_dec_sub$DASH.Score <- as.factor(ifelse(as.numeric(as.character(ad_dec_sub$DASH.Score)) >= 14, c(">=14"), c("<14")))
+# Create empty levels on both factors for compability:
+ad_jun_sub$DASH.Score <- factor(ad_jun_sub$DASH.Score, levels = c(levels(ad_jun_sub$DASH.Score), ">=14"))
+ad_dec_sub$DASH.Score <- factor(ad_dec_sub$DASH.Score, levels = c(levels(ad_dec_sub$DASH.Score), ">14"))
+
+ad_jun_sub$Ethnicity <- as.factor(gsub(pattern = "white - British", replacement = "White - British", as.character(ad_jun_sub$Ethnicity)))
+ad_jun_sub$Religion <- as.factor(gsub(pattern = "none", replacement = "None", as.character(ad_jun_sub$Religion)))
+ad_jun_sub$Religion <- as.factor(gsub(pattern = "none", replacement = "None", as.character(ad_jun_sub$Religion)))
+ad_jun_sub$Met.on.internet <- as.factor(gsub(pattern = "no", replacement = "No", as.character(ad_jun_sub$Met.on.internet)))
+ad_jun_sub$Met.on.internet <- as.factor(gsub(pattern = "yes", replacement = "Yes", as.character(ad_jun_sub$Met.on.internet)))
+# Typo in data entry: "Vaginal rape" in ad_jun_sub$Met.on.internet
+table(ad_jun_sub$Met.on.internet)
+ad_jun_sub$Met.on.internet <- as.factor(gsub(pattern = "Vaginal rape", replacement = NA, as.character(ad_jun_sub$Met.on.internet)))
+ad_jun_sub$Assault.type.2 <- as.factor(gsub(pattern = "N/A", replacement = NA, as.character(ad_jun_sub$Assault.type.2)))
+ad_jun_sub$Strangulation <- as.factor(gsub(pattern = "no", replacement = "No", as.character(ad_jun_sub$Strangulation)))
+ad_jun_sub$Strangulation <- as.factor(gsub(pattern = "Notrecorded in Notes", replacement = NA, as.character(ad_jun_sub$Strangulation)))
+ad_jun_sub$Strangulation <- as.factor(gsub(pattern = "Not kNown by client", replacement = "Unkown", as.character(ad_jun_sub$Strangulation)))
+ad_jun_sub$Sex.Worker <- as.factor(gsub(pattern = "no", replacement = "No", as.character(ad_jun_sub$Sex.Worker)))
+ad_jun_sub$Emergency.contraception <- as.factor(gsub(pattern = "yes", replacement = "Yes", as.character(ad_jun_sub$Emergency.contraception)))
+ad_jun_sub$Emergency.contraception <- as.factor(gsub(pattern = "not required", replacement = "Not required", as.character(ad_jun_sub$Emergency.contraception)))
+ad_jun_sub$Emergency.contraception <- as.factor(gsub(pattern = "Not documented", replacement = NA, as.character(ad_jun_sub$Emergency.contraception)))
+ad_jun_sub$HIV.PEP <- as.factor(gsub(pattern = "Not documented", replacement = NA, as.character(ad_jun_sub$HIV.PEP)))
+ad_jun_sub$Hep.B <- as.factor(gsub(pattern = "Not documented", replacement = NA, as.character(ad_jun_sub$Hep.B)))
+ad_jun_sub$Hep.B <- as.factor(gsub(pattern = "yes", replacement = "Yes", as.character(ad_jun_sub$Hep.B)))
+ad_jun_sub$Referrer <- as.factor(gsub(pattern = "self", replacement = "Self", as.character(ad_jun_sub$Referrer)))
+ad_jun_sub$Referrer <- as.factor(gsub(pattern = "police", replacement = "Police", as.character(ad_jun_sub$Referrer)))
+ad_jun_sub$LDSQ.. <- as.factor(gsub(pattern = "declined", replacement = "Not done", as.character(ad_jun_sub$LDSQ..)))  # declined is a reason why it wasn't done, but not done doesn't imply it was declined
+
+# Test this.
+# Could use this to minimize code using gsub:
+# gsubFactor <- function(x, pattern, replacement) {
+# for(i in 1:length(pattern))
+# y <- as.factor(gsub(
+#     pattern[i] ,
+#     replacement[i],
+#     as.character(x)))
+#   y
+# }
+# gsubFactorMult <- function(x, pattern, replacement) {
+#   for(i in 1:length(pattern))
+#     x <- gsub(pattern[i], replacement[i], x)
+#   x
+# }
+# In 1st by using lexical scope would only need to gsubFactor(x, pattern, replacement), but in 2nd should be x$y <- gsubFactorMult(x, pattern, replacement)
+
+uniqueVals(ch_dec_sub, ch_jun_sub)  # check
+
+# children starting on dec
+ch_dec_sub$Referrer <- as.factor(gsub(pattern = "Police Referrals", replacement = "Police", as.character(ch_dec_sub$Referrer)))
+ch_dec_sub$Referrer <- as.factor(gsub(pattern = "Self Referrals", replacement = "Self", as.character(ch_dec_sub$Referrer)))
+
+ch_dec_sub$Assault.type.1 <- as.factor(gsub(pattern = "Penile anal", replacement = "Penile Anal", as.character(ch_dec_sub$Assault.type.1)))
+ch_dec_sub$Assault.type.1 <- as.factor(gsub(pattern = "Penile vaginal", replacement = "Penile Vaginal", as.character(ch_dec_sub$Assault.type.1)))
+
+ch_dec_sub$Assault.type.2 <- as.factor(gsub(pattern = "Penile anal", replacement = "Penile Anal", as.character(ch_dec_sub$Assault.type.2)))
+ch_dec_sub$Assault.type.2 <- as.factor(gsub(pattern = "Digital anal", replacement = "Digital Anal", as.character(ch_dec_sub$Assault.type.2)))
+
+ch_dec_sub$No..of.perps. <- ifelse(as.numeric(as.character(ch_dec_sub$No..of.perps.)) > 1, c("Multiple perps"), c("Single perp"))
+ch_dec_sub$No..of.perps. <- as.factor(ch_dec_sub$No..of.perps.)
+
+ch_dec_sub$Relationship.to.alleged.perp. <- as.factor(gsub(pattern = "Acquaitnace > 24 hours", replacement = "Acquaintance > 24 hours", as.character(ch_dec_sub$Relationship.to.alleged.perp.)))
+
+ch_dec_sub$Met.on.internet <- as.factor(gsub(pattern = "yes", replacement = "Yes", as.character(ch_dec_sub$Met.on.internet)))
+
+ch_dec_sub$Emergency.contraception <- as.factor(gsub(pattern = "N/A", replacement = NA, as.character(ch_dec_sub$Emergency.contraception)))
+ch_dec_sub$Emergency.contraception <- as.factor(gsub(pattern = "Unknown", replacement = NA, as.character(ch_dec_sub$Emergency.contraception)))
+
+ch_dec_sub$HIV.PEP <- as.factor(gsub(pattern = "N/a", replacement = NA, as.character(ch_dec_sub$HIV.PEP)))
+ch_dec_sub$HIV.PEP <- as.factor(gsub(pattern = "N/A", replacement = NA, as.character(ch_dec_sub$HIV.PEP)))
+ch_dec_sub$HIV.PEP <- as.factor(gsub(pattern = "Unknown", replacement = NA, as.character(ch_dec_sub$HIV.PEP)))
+
+ch_dec_sub$Hep.B <- as.factor(gsub(pattern = "N/A", replacement = NA, as.character(ch_dec_sub$Hep.B)))
+ch_dec_sub$Hep.B <- as.factor(gsub(pattern = "Unknown", replacement = NA, as.character(ch_dec_sub$Hep.B)))
+
+ch_dec_sub$U.16.DVD <- as.factor(gsub(pattern = "N/A", replacement = NA, as.character(ch_dec_sub$U.16.DVD)))
+ch_dec_sub$U.16.DVD <- as.factor(gsub(pattern = "Unknown", replacement = NA, as.character(ch_dec_sub$U.16.DVD)))
+
+ch_dec_sub$CSE.CSE.risk <- as.factor(gsub(pattern = "yes", replacement = "Yes", as.character(ch_dec_sub$CSE.CSE.risk)))
+
+# children starting on jun
+ch_jun_sub$FME.context <- as.factor(gsub(pattern = "acute", replacement = "Acute", as.character(ch_jun_sub$FME.context)))
+
+ch_jun_sub$Gender <- as.factor(gsub(pattern = "female", replacement = "Female", as.character(ch_jun_sub$Gender)))
+ch_jun_sub$Gender <- as.factor(gsub(pattern = "male", replacement = "Male", as.character(ch_jun_sub$Gender)))
+
+ch_jun_sub$Ethnicity <- as.factor(gsub(pattern = "white - British", replacement = "White - British", as.character(ch_jun_sub$Ethnicity)))
+ch_jun_sub$Ethnicity <- as.factor(gsub(pattern = "Not known", replacement = NA, as.character(ch_jun_sub$Ethnicity)))
+
+ch_jun_sub$Religion <- as.factor(gsub(pattern = "none", replacement = "None", as.character(ch_jun_sub$Religion)))
+
+ch_jun_sub$DV.history <- as.factor(gsub(pattern = "no", replacement = "No", as.character(ch_jun_sub$DV.history)))
+ch_jun_sub$DV.history <- as.factor(gsub(pattern = "Unknown", replacement = NA, as.character(ch_jun_sub$DV.history)))
+ch_jun_sub$DV.history <- as.factor(gsub(pattern = "UnkNown", replacement = NA, as.character(ch_jun_sub$DV.history)))
+
+ch_jun_sub$CSE.CSE.risk <- as.factor(gsub(pattern = "no", replacement = "No", as.character(ch_jun_sub$CSE.CSE.risk)))
+ch_jun_sub$CSE.CSE.risk <- as.factor(gsub(pattern = "yes", replacement = "Yes", as.character(ch_jun_sub$CSE.CSE.risk)))
+ch_jun_sub$CSE.CSE.risk <- as.factor(gsub(pattern = "UnkNown", replacement = NA, as.character(ch_jun_sub$CSE.CSE.risk)))
+
+ch_jun_sub$Relationship.to.alleged.perp. <- as.factor(gsub(pattern = "brother", replacement = "Brother", as.character(ch_jun_sub$Relationship.to.alleged.perp.)))
+ch_jun_sub$Relationship.to.alleged.perp. <- as.factor(gsub(pattern = "father", replacement = "Father", as.character(ch_jun_sub$Relationship.to.alleged.perp.)))
+ch_jun_sub$Relationship.to.alleged.perp. <- as.factor(gsub(pattern = "stranger", replacement = "Stranger", as.character(ch_jun_sub$Relationship.to.alleged.perp.)))
+
+ch_jun_sub$Met.on.internet <- as.factor(gsub(pattern = "no", replacement = "No", as.character(ch_jun_sub$Met.on.internet)))
+ch_jun_sub$Met.on.internet <- as.factor(gsub(pattern = "yes", replacement = "Yes", as.character(ch_jun_sub$Met.on.internet)))
+
+ch_jun_sub$Assault.type.2 <- as.factor(gsub(pattern = "oral rape", replacement = "Oral rape", as.character(ch_jun_sub$Assault.type.2)))
+ch_jun_sub$Assault.type.2 <- as.factor(gsub(pattern = "N/A", replacement = NA, as.character(ch_jun_sub$Assault.type.2)))
+
+ch_jun_sub$Assault.type.3 <- as.factor(gsub(pattern = "N/A", replacement = NA, as.character(ch_jun_sub$Assault.type.3)))
+ch_jun_sub$Assault.type.3 <- as.factor(gsub(pattern = "anal rape", replacement = "Anal rape", as.character(ch_jun_sub$Assault.type.3)))
+
+ch_jun_sub$Emergency.contraception <- as.factor(gsub(pattern = "anal rape", replacement = "Anal rape", as.character(ch_jun_sub$Emergency.contraception)))
+ch_jun_sub$Emergency.contraception <- as.factor(gsub(pattern = "already had", replacement = "Yes", as.character(ch_jun_sub$Emergency.contraception)))
+ch_jun_sub$Emergency.contraception <- as.factor(gsub(pattern = "yes", replacement = "Yes", as.character(ch_jun_sub$Emergency.contraception)))
+
+ch_jun_sub$HIV.PEP <- as.factor(gsub(pattern = "not required", replacement = "Not required", as.character(ch_jun_sub$HIV.PEP)))
+ch_jun_sub$HIV.PEP <- as.factor(gsub(pattern = "Not documented", replacement = NA, as.character(ch_jun_sub$HIV.PEP)))
+
+ch_jun_sub$Hep.B <- as.factor(gsub(pattern = " Declined", replacement = "Declined", as.character(ch_jun_sub$Hep.B)))
+ch_jun_sub$Hep.B <- as.factor(gsub(pattern = "Not", replacement = "No", as.character(ch_jun_sub$Hep.B)))
+ch_jun_sub$Hep.B <- as.factor(gsub(pattern = "Not documented", replacement = NA, as.character(ch_jun_sub$Hep.B)))
+ch_jun_sub$Hep.B <- as.factor(gsub(pattern = "No documented", replacement = NA, as.character(ch_jun_sub$Hep.B)))
+
+ch_jun_sub$U.16.DVD <- as.factor(gsub(pattern = "dvd", replacement = NA, as.character(ch_jun_sub$U.16.DVD)))
+ch_jun_sub$U.16.DVD <- as.factor(gsub(pattern = "n/a", replacement = NA, as.character(ch_jun_sub$U.16.DVD)))
+ch_jun_sub$U.16.DVD <- as.factor(gsub(pattern = "N/A", replacement = NA, as.character(ch_jun_sub$U.16.DVD)))
+ch_jun_sub$U.16.DVD <- as.factor(gsub(pattern = "yes", replacement = "Yes", as.character(ch_jun_sub$U.16.DVD)))
+ch_jun_sub$U.16.DVD <- as.factor(gsub(pattern = "yES", replacement = "Yes", as.character(ch_jun_sub$U.16.DVD)))
+ch_jun_sub$U.16.DVD <- as.factor(gsub(pattern = "no", replacement = "No", as.character(ch_jun_sub$U.16.DVD)))
+
+ch_jun_sub$Referrer <- as.factor(gsub(pattern = "POLICE", replacement = "Police", as.character(ch_jun_sub$Referrer)))
+ch_jun_sub$Referrer <- as.factor(gsub(pattern = "police", replacement = "Police", as.character(ch_jun_sub$Referrer)))
+
+ch_jun_sub$CAIDSQ.. <- as.factor(gsub(pattern = "N/A", replacement = NA, as.character(ch_jun_sub$CAIDSQ..)))
+ch_jun_sub$CAIDSQ.. <- as.factor(gsub(pattern = "not done", replacement = "Not done", as.character(ch_jun_sub$CAIDSQ..)))
+
+# Function to change to lowcase all characters in DF
+# lapply(df, function(x) {
+#   if (is.character(x)) return(tolower(x))
+#   else return(v)
+# })
+
+# 4. Rbind DFs ------------------------------------------------------------
+setdiff(names(ad_dec_sub), names(ad_jun_sub))
+setdiff(names(ad_jun_sub), names(ad_dec_sub)) 
+ad_dec_sub$FME.mins <- NULL
+ad_jun_sub$FME.mins <- NULL
+setdiff(names(ch_dec_sub), names(ch_jun_sub))  
+setdiff(names(ch_jun_sub), names(ch_dec_sub)) 
+ch_dec_sub$Assault.type.4 <- NA
+ch_jun_sub$FME.mins <- NULL
+
+adultDF <- rbind(ad_dec_sub, ad_jun_sub)
+childDF <- rbind(ch_dec_sub, ch_jun_sub)
+
+sapply(adultDF[, names(adultDF)], class)
+sapply(childDF[, names(childDF)], class)
+
+sapply(adultDF[, names(adultDF)], unique)
+sapply(childDF[, names(childDF)], unique)
+
+
+# 5. Explore and map missing values ---------------------------------------
 
 
 
