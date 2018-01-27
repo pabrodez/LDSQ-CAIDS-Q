@@ -256,6 +256,7 @@ ch_jun_sub$CAIDSQ.. <- as.factor(gsub(pattern = "not done", replacement = "Not d
 # })
 
 # 4. Rbind DFs ------------------------------------------------------------
+# fix mistake:
 setdiff(names(ad_dec_sub), names(ad_jun_sub))
 setdiff(names(ad_jun_sub), names(ad_dec_sub)) 
 ad_dec_sub$FME.mins <- NULL
@@ -270,12 +271,72 @@ childDF <- rbind(ch_dec_sub, ch_jun_sub)
 
 sapply(adultDF[, names(adultDF)], class)
 sapply(childDF[, names(childDF)], class)
+childDF$Assault.type.4 <- factor(childDF$Assault.type.4)
 
 sapply(adultDF[, names(adultDF)], unique)
 sapply(childDF[, names(childDF)], unique)
 
+# correction:
+childDF$Gender <- as.factor(gsub(pattern = "FeMale", replacement = "Female", as.character(childDF$Gender)))
 
 # 5. Explore and map missing values ---------------------------------------
+library(data.table)
+library(tidyverse)
+# divide between chategorial and numeric vars. Keep date aside
+catVarAd <- names(adultDF)[which(sapply(adultDF, is.factor))]
+numVarAd <- names(adultDF)[which(sapply(adultDF, is.numeric))]
+
+catVarCh <- names(childDF)[which(sapply(childDF, is.factor))]
+numVarCh <- names(childDF)[which(sapply(childDF, is.numeric))]
+
+# check for NAs
+colSums(sapply(adultDF, is.na))  # Assult type 2, 3 and 4 are not needed to be answered. While the 1st is usually answered the others can be if there are multiple types  
+colSums(sapply(childDF, is.na))  # Same as above
+
+# Using the vector for cat and num vars we could be specific
+colSums(sapply(as.data.table(adultDF)[,.SD, .SDcols = catVarAd], is.na))
+colSums(sapply(as.data.table(adultDF)[,.SD, .SDcols = numVarAd], is.na))
+
+colSums(sapply(as.data.table(childDF)[,.SD, .SDcols = catVarCh], is.na))
+colSums(sapply(as.data.table(childDF)[,.SD, .SDcols = numVarCh], is.na))
+
+# Visualize map of NAs
+plotNa <- function(dataFrame, title = NULL) {
+  tempDf <- as.data.frame(ifelse(is.na(dataFrame), 0, 1))
+  tempDf <- tempDf[, order(colSums(tempDf))]
+  tempData <- expand.grid(list(x = 1:nrow(tempDf), y = colnames(tempDf)))
+  tempData$v <- as.vector(as.matrix(tempDf))
+  tempData <- data.frame(x = unlist(tempData$x), y = unlist(tempData$y), v = unlist(tempData$v))
+  ggplot(tempData) + geom_tile(aes(x=x, y=y, fill=factor(v))) +
+    scale_fill_manual(values=c("white", "black"), name="Missing value\n1=No, 0=Yes") +
+    theme_light() + ylab("") + xlab("Rows of data set") + ggtitle(title)
+  
+}
+
+plotNa(adultDF)
+ggsave("NAs adult data-set.png", plot = last_plot(), device = "png", path = "./plots")
+plotNa(childDF)
+ggsave("NAs children data-set.png", plot = last_plot(), device = "png", path = "./plots")
+
+# percentage of missing values in each variable
+sapply(adultDF, function(x) sum(is.na(x)) / nrow(adultDF))
+sapply(childDF, function(x) sum(is.na(x)) / nrow(childDF))
+
+# check duplicated rows
+sum(duplicated(adultDF))
+sum(duplicated(childDF))
+childDF[duplicated(childDF), ]  # they don't seem as strict duplicates: Different dates.
+
+# Summarize categorical data
+summary(as.data.table(adultDF)[, .SD, .SDcols = catVarAd])
+summary(as.data.table(childDF)[, .SD, .SDcols = catVarCh])
+
+
+
+
+
+
+
 
 
 
