@@ -157,7 +157,7 @@ ad_jun_sub$LDSQ.. <- as.factor(gsub(pattern = "declined", replacement = "Not don
 #   x
 # }
 # In 1st by using lexical scope would only need to gsubFactor(x, pattern, replacement), but in 2nd should be x$y <- gsubFactorMult(x, pattern, replacement)
-
+# Using sapply(x, tolower) would do most of the substitution job
 uniqueVals(ch_dec_sub, ch_jun_sub)  # check
 
 # children starting on dec
@@ -327,9 +327,75 @@ sum(duplicated(adultDF))
 sum(duplicated(childDF))
 childDF[duplicated(childDF), ]  # they don't seem as strict duplicates: Different dates.
 
+
+# 6. Summary statistics ---------------------------------------------------
+# rmarkdown::render("./reports/Week 5-11 Feb/Report 5-11 Feb.Rmd", "pdf_document")
+
 # Summarize categorical data
 summary(as.data.table(adultDF)[, .SD, .SDcols = catVarAd])
 summary(as.data.table(childDF)[, .SD, .SDcols = catVarCh])
+
+# Summarize numeric data
+summary(as.data.table(adultDF)[, .SD, .SDcols = numVarAd])
+summary(as.data.table(childDF)[, .SD, .SDcols = numVarCh])
+
+# Assign categ and num vars to DFs
+adult_cat <- as.data.table(adultDF)[,.SD, .SDcols = catVarAd]
+adult_num <- as.data.table(adultDF)[,.SD, .SDcols = numVarAd]
+child_cat <- as.data.table(childDF)[,.SD, .SDcols = catVarCh]
+child_num <- as.data.table(childDF)[,.SD, .SDcols = numVarCh]
+
+# Functions to plot
+library(gridExtra)
+library(e1071)  
+
+plotHist <- function(input, i) {
+  data <- data.frame(x=input[[i]])
+  his <- ggplot(data=data, aes(x=factor(x))) + stat_count() + xlab(colnames(input)[i]) + theme_light() + 
+    theme(axis.text.x = element_text(angle = 90, hjust =1))
+  return (his)
+}
+
+
+density_glot <- function(input, i){
+  data <- data.frame(x=input[[i]])
+  plot <- ggplot(data = data) + geom_line(aes(x = x), stat = 'density', size = 1,alpha = 1.0) +
+    xlab(paste0((colnames(input)[i]), '\n', 'Skewness: ',round(skewness(input[[i]], na.rm = TRUE), 2))) + theme_light() 
+  return(suppressWarnings(plot))
+  
+}
+
+grid_plot <- function(input, fun, ii, ncol=2) {
+  plot_list <- list()
+  for (i in ii) {
+    plot <- fun(input=input, i=i)
+    plot_list <- c(plot_list, list(plot))
+  }
+  do.call("grid.arrange", c(plot_list, ncol=ncol))
+}
+# Cat vars adults
+grid_plot(adult_cat, plotHist, c(1, 3, 4))
+grid_plot(adult_cat, plotHist, 5:8, ncol = 1)
+grid_plot(adult_cat, plotHist, 9:12)
+grid_plot(adult_cat, plotHist, 13:16)
+grid_plot(adult_cat, plotHist, 16:20)
+
+# Cat vars children
+grid_plot(child_cat, plotHist, c(1, 2, 4))
+grid_plot(child_cat, plotHist, 5:8)
+grid_plot(child_cat, plotHist, 9:13)
+grid_plot(child_cat, plotHist, 14:17)
+grid_plot(child_cat, plotHist, 18:19)
+
+# Num vars adults
+grid_plot(adult_num, density_glot, ii = 1)
+
+# Num vars chil
+grid_plot(child_num, density_glot, ii= 1)
+
+
+
+
 
 
 

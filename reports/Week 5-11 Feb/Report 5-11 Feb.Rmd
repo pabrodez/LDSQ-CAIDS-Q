@@ -1,0 +1,103 @@
+---
+title: "Analysis of LDSQ/ CAIDS-Q data-set. Report 5-11th Feb"
+author: "Pablo M. Rodriguez"
+date: "8th February 2018"
+output: html_document
+---
+
+## 1. Summary statistics for categorical variables
+#### *Adults*
+```{r eval = TRUE, echo = FALSE}
+summary(as.data.table(adultDF)[, .SD, .SDcols = catVarAd])
+```
+#### *Children*
+```{r eval = TRUE, echo = FALSE}
+summary(as.data.table(childDF)[, .SD, .SDcols = catVarCh])
+```
+
+## 2. Summary statistics for numeric variables
+#### *Adults*
+```{r eval = TRUE, echo = FALSE}
+summary(as.data.table(adultDF)[, .SD, .SDcols = numVarAd])
+```
+
+#### *Children*
+```{r eval = TRUE, echo = FALSE}
+summary(as.data.table(childDF)[, .SD, .SDcols = numVarCh])
+```
+Age is the only numeric variable. FME also is, left aside because getting the difference in mins is troubling.
+
+## 2. Histograms for categorical variables
+NAs are included in each. Representing this can be meaningful for some variables. To avoid overplotting, area of residence have been omitted as it is the column with more distinct values, which takes a lot of space to cover properly. Basic information about this variable can be found above.
+
+\newpage
+
+#### *Adults*
+```{r eval = TRUE, echo = FALSE}
+grid_plot(adult_cat, plotHist, c(1, 4))
+grid_plot(adult_cat, plotHist, 3)
+grid_plot(adult_cat, plotHist, 5:6)
+grid_plot(adult_cat, plotHist, 7:8)
+grid_plot(adult_cat, plotHist, 9:10)
+grid_plot(adult_cat, plotHist, 11:12)
+grid_plot(adult_cat, plotHist, 13:14)
+grid_plot(adult_cat, plotHist, 15:16)
+grid_plot(adult_cat, plotHist, 17:18)
+grid_plot(adult_cat, plotHist, 19:20)
+```
+
+
+
+\newpage
+#### *Children*
+```{r eval = TRUE, echo = FALSE}
+grid_plot(child_cat, plotHist, c(1, 2))
+grid_plot(child_cat, plotHist, 4)
+grid_plot(child_cat, plotHist, 5:6)
+grid_plot(child_cat, plotHist, 7:8)
+grid_plot(child_cat, plotHist, 9:10)
+grid_plot(child_cat, plotHist, 11:12)
+grid_plot(child_cat, plotHist, 13:14)
+grid_plot(child_cat, plotHist, 15:16)
+grid_plot(child_cat, plotHist, 17:18)
+grid_plot(child_cat, plotHist, 19)
+```
+
+
+\newpage
+## 3. Age distribution among clients 
+#### *Children*
+```{r eval = TRUE, echo = FALSE}
+grid_plot(child_num, density_glot, ii= 1, ncol = 1)
+```
+
+
+\newpage
+#### *Adults*
+```{r eval = TRUE, echo = FALSE}
+grid_plot(adult_num, density_glot, ii = 1, ncol = 1)
+```
+
+## Comments
+* The histograms were made to make visualization easy. In some of them the labels in the X-axis overlap. To make them clearer, they can be generated again using more space.
+
+* Some of the variables are quite meaningful themselves. Interpretaton is clear in most of them. This helps to look for relationships.
+
+* I have not been able to solve the problem with computing the FME for the Jun-Nov set in a non-mechanical way. Because "FME start time" and "FME end time" are times, computing the difference gets difficult as there is no date associated to the second. This way the program does not know whether it should return the difference in mins from 8pm to 3am of the next day or of the same day. I am gonna try to find a solution which does not involve individually typing in the difference in mins. But I will if that is ther is no apparent solution to it. As we discussed, these variables can be used to get info about the followed protocol.
+
+* The "Area of residence" column has so many distinct rows that makes it cumbersome to visualize, and has not been included. The good part is that it will be used for the maps of density.
+
+* I mentioned the variables I omitted when I merged both datasets, but it is important to keep in mind that "Learning disability" in Jun-Nov set, even though only collected in this period, is relevant to the study as It can validate the LDSQ/ CAIDS-Q score.
+
+* Next step will be, firstly, elaborate a draft of the density maps and the temporal variances throughout the year. Secondly, it will involve looking at correlations between LDSQ/CAIDS-Q scored and other independent variables and presenting graphs with high correlation (and take a look at other correlations that can show up). Finally, before moving on, I need to review the code in order to check for any mistakes and to simplify it.
+
+* The graphs shown come only from the unique adult and children data sets. I will need to take another look at those not-common variables that left aside for consistency.
+
+
+
+
+
+
+
+
+
