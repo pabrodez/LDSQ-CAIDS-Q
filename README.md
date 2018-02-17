@@ -3,9 +3,10 @@ Part of the study at SARC (St. Mary's Hospital, Manchester) to analyze LDSQ and 
 Objectives:
 - Process and clean data from 4 data-sets from Dec 2016- May 2017 and Jun-Nov 2017 (2 for children, 2 for adults)
 - Exploratory data analysis
-...  Visualization of distribution of variables
-
-...  Relationships
+  - Visualization of distribution of variables
+  - Relationships
+  - Spatial distribution
+  - Distribution of cases over time
 - What's the underlying structure of the data? 
-...  Model?
+  - Model?
 - How to improve the data collection?
