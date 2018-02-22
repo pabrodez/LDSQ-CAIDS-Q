@@ -1,0 +1,181 @@
+---
+title: "LDSQ/ CAIDSQ. 19-25 Feb report"
+author: "Pablo M. Rodriguez"
+output:
+  pdf_document:
+    df_print: kable
+    fig_height: 5
+    fig_width: 5
+    
+    
+---
+
+
+```{r global_options, inlude = FALSE, echo = FALSE}
+knitr::opts_chunk$set(eval= TRUE, echo= FALSE)
+```
+## 1. *Mental health is missing - this was a variable I was interested in. I have a feeling that is because we only used it for half the data.  The earlier half where the data was entered did not have information on mental health. i need to think about this.*
+There are a few columns present in Jun-Nov 17 data but missing in Dec 16- May 17: Physical disability, Learning disability and Mental Health, for example. These would be interesting to have for the aggregated dataset. For Dec-May, in the section "Comments", there are sometimes comments on mental health.
+
+```{r out.extra='angle=270'}
+ggplot(data = adultDF) +
+  geom_bar(mapping = aes(x=Relationship.to.alleged.perp.), width = 0.5, show.legend = FALSE) +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.4)) +
+  labs(title = "Relationship to alleged perp. Adults")
+```
+
+## 2. Relationship.to.alleged.perp, adults. Detailed breakdown.
+
+For the sake of space some categories are omitted. Here is a ditaled list of frequencies in Relationship.to.alleged.perp variable:
+
+```{r fig.align='left' }
+data.frame("N"=sort(summary(adultDF$Relationship.to.alleged.perp.), na.last = TRUE, decreasing = TRUE))
+```
+
+It would be useful to aggregate all categories of family members as "family". That would make comparisson clear.
+
+## 3. NAs in No..of.perps.
+
+There are 13 NAs in No. of perps. in adult data and 18 in Children. Taking a look into the original spreadsheets I found a few blanks. I broke down the NAs into adult and children and periods in case it might help. 
+
+```{r}
+data.frame("Number of NAs: No..of.perps."= rbind(
+  "Adult Dec-May" = nrow(ad_dec_sub[is.na(ad_dec_sub$No..of.perps.), ]),
+  "Adult June-Nov" = nrow(ad_jun_sub[is.na(ad_jun_sub$No..of.perps.), ]),
+  "Children Dec-May" = nrow(ch_dec_sub[is.na(ch_dec_sub$No..of.perps.), ]),
+  "Children June-Nov" = nrow(ch_jun_sub[is.na(ch_jun_sub$No..of.perps.), ])
+  )
+)
+```
+## 4. Assaulty type categories. *These two mean the same thing. This might be because we have collapsed the two spreadsheets data. I noticed this earlier also in ethnicity. two groups for white british and two groups for white other*
+
+I also fixed duplicated categories in Assault types. These are lists containing categories. In area of residence I tried to add the prefix "GM" to those belonging to Greater Manchester. I might have missed some areas because I don't know if they belong to the county (you can find the list of areas in the last section). I think I need to take another thorough look at duplicated categories in all columns before moving on.
+
+Ethnicity:
+```{r }
+levels(adultDF$Ethnicity)
+```
+Assault types:
+```{r }
+levels(adultDF$Assault.type.1)
+```
+
+## 5. Referrer NAs breakdown
+
+```{r}
+# Referrer NAs breakdown. Adults & Child
+
+data.frame("Number of NAs: Referrer"= rbind(
+  "Adult Dec-May" = nrow(ad_dec_sub[is.na(ad_dec_sub$Referrer), ]),
+  "Adult June-Nov" = nrow(ad_jun_sub[is.na(ad_jun_sub$Referrer), ]),
+  "Children Dec-May" = nrow(ch_dec_sub[is.na(ch_dec_sub$Referrer), ]),
+  "Children June-Nov" = nrow(ch_jun_sub[is.na(ch_jun_sub$Referrer), ])
+  )
+)
+```
+
+## 6. LDSQ detailed distribution. *I assume this is <43. This is useful categorisation in this way.*
+
+This is the detailed distribution of LDSQ scores. I have not categorised all scores under 43 as <43 because I wanted to keep all categories as they are until you decide if it is more appropriate to do otherwise.
+
+```{r}
+# LDSQ detailed str and histogram
+theme_set(theme_classic())
+
+ggplot(data = adultDF) +
+  geom_bar(mapping = aes(x=LDSQ..), width = 0.5, show.legend = FALSE) +
+  theme(axis.text.x = element_text(angle = 70, vjust = 0.5)) +
+  labs(title = "LDSQ count")
+
+```
+
+```{r}
+
+data.frame("N"=sort(summary(adultDF$LDSQ..), na.last = TRUE, decreasing = TRUE))
+```
+
+## 6. 2. LDSQ and CAIDS NAs breakdown
+
+```{r}
+# LDSQ NAs breakdown. Adults
+data.frame("Number of NAs: LDSQ/CAIDS"= rbind(
+  "Adult Dec-May" = nrow(ad_dec_sub[is.na(ad_dec_sub$LDSQ..), ]),
+  "Adult June-Nov" = nrow(ad_jun_sub[is.na(ad_jun_sub$LDSQ..), ]),
+  "Children Dec-May" = nrow(ch_dec_sub[is.na(ch_dec_sub$CAIDSQ..), ]),
+  "Children June-Nov" = nrow(ch_jun_sub[is.na(ch_jun_sub$CAIDSQ..), ])
+  )
+)
+```
+
+## 7. *Clearly error - we can check STARS to get missing genders*
+
+Here is the Gender NAs breakdown for children
+
+```{r}
+# Gender NAs breakdown. Child
+data.frame("Number NAs: Gender"= rbind(
+  "Children Dec-May" = nrow(ch_dec_sub[is.na(ch_dec_sub$Gender), ]),
+  "Children June-Nov" = nrow(ch_jun_sub[is.na(ch_jun_sub$Gender), ])
+  )
+)
+```
+## 8. DV. History in Children. *Is this DV.history for 16+ year olds only (as DV history is not appropriate for 15's and younger) same with DASH score If not, the NAs may be fewer.*
+
+The "DASH done" and "DASH score" are not present in the Dec-May spreadsheet for Children. For this reason, it is not in the aggregated dataset for children.
+
+### Number of rows in children data with DV.History = "Yes" and Age > 15
+```{r}
+select(childDF, DV.history, Age) %>% na.omit() %>% filter(Age > 15 & DV.history == "Yes") %>% nrow()
+```
+### Number of rows in children data with DV.History = "Yes" and Age <= 15
+```{r}
+select(childDF, DV.history, Age) %>% na.omit() %>% filter(Age <= 15 & DV.history == "Yes") %>% nrow()
+
+```
+If we considered the last as not appropriateand exclude them from the measure (without assigning NAs) then the overall number of NAs would be less. The number of new hypothetical NAs in DV.history would be:
+```{r}
+nrow(childDF[is.na(childDF$DV.history), ]) - select(childDF, DV.history, Age) %>% na.omit() %>% filter(Age <= 15 & DV.history == "Yes") %>% nrow()
+```
+
+Still, we can break down those NAs into periods
+```{r}
+# DV.history NAs breakdown. Children
+data.frame("Number of NAs: CAIDS"= rbind(
+  "Children Dec-May" = nrow(ch_dec_sub[is.na(ch_dec_sub$DV.history), ]),
+  "Children June-Nov" = nrow(ch_jun_sub[is.na(ch_jun_sub$DV.history), ])
+  )
+)
+```
+
+## 9. CAIDSQ detailed distribution.
+```{r}
+# CAIDS detailed distribution
+ggplot(data = childDF) +
+  geom_bar(mapping = aes(x=CAIDSQ..), width = 0.5, show.legend = FALSE) +
+  theme(axis.text.x = element_text(angle = 70, vjust = 0.5)) +
+  labs(title = "CAIDSQ scores distribution")
+```
+
+```{r}
+data.frame("N"=sort(summary(childDF$CAIDSQ..), na.last = TRUE, decreasing = TRUE))
+
+```
+
+## 10. Area of residence detailed distribution.
+
+```{r}
+# Area of residence. Children and adults detailed
+data.frame("Adults"=summary(group_by(select(adultDF, Area.of.residence), Area.of.residence), maxsum = 120))
+```
+
+```{r}
+data.frame("Children"=summary(group_by(select(childDF, Area.of.residence), Area.of.residence), maxsum = 86))
+```
+
+
+
+
+
+
+
+

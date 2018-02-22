@@ -329,7 +329,7 @@ childDF[duplicated(childDF), ]  # they don't seem as strict duplicates: Differen
 
 
 # 6. Summary statistics ---------------------------------------------------
-# rmarkdown::render("./reports/Week 5-11 Feb/Report 5-11 Feb.Rmd", "pdf_document")
+# rmarkdown::render("./reports/Week 19-25 Feb/19-25 Feb report.Rmd", "pdf_document")
 
 # Summarize categorical data
 summary(as.data.table(adultDF)[, .SD, .SDcols = catVarAd])
@@ -392,6 +392,228 @@ grid_plot(adult_num, density_glot, ii = 1)
 
 # Num vars chil
 grid_plot(child_num, density_glot, ii= 1)
+
+
+# 7. Corrections from comments on 5-11 Feb report -------------------------
+# rmarkdown::render("./reports/Week 19-25 Feb/19-25 Feb report.Rmd", "pdf_document")
+# Adults: relationship to alleged perp histogram detailled
+data.frame("N"=sort(summary(adultDF$Relationship.to.alleged.perp.), na.last = TRUE, decreasing = TRUE))
+
+ggplot(data = adultDF) +
+  geom_bar(mapping = aes(x=Relationship.to.alleged.perp.), width = 0.5, show.legend = FALSE) +
+  theme(axis.text.x = element_text(angle = 70, vjust = 0.5)) +
+  labs(title = "Relationship to alleged perp. Adults")
+# No..of.perps. NAs breakdown. Adults & Child
+data.frame("Number of NAs: No..of.perps."= rbind(
+  "Adult Dec-May" = nrow(ad_dec_sub[is.na(ad_dec_sub$No..of.perps.), ]),
+  "Adult June-Nov" = nrow(ad_jun_sub[is.na(ad_jun_sub$No..of.perps.), ]),
+  "Children Dec-May" = nrow(ch_dec_sub[is.na(ch_dec_sub$No..of.perps.), ]),
+  "Children June-Nov" = nrow(ch_jun_sub[is.na(ch_jun_sub$No..of.perps.), ])
+  )
+)
+# Substitue values  that mean the same in vars
+# Ethnicity adults
+adultDF$Ethnicity <- as.factor(gsub(pattern = "White - other", replacement = "White Other", as.character(adultDF$Ethnicity)))
+adultDF$Ethnicity <- as.factor(gsub(pattern = "White - British", replacement = "White British", as.character(adultDF$Ethnicity)))
+adultDF$Ethnicity <- as.factor(gsub(pattern = "White - Irish", replacement = "White Irish", as.character(adultDF$Ethnicity)))
+adultDF$Ethnicity <- as.factor(gsub(pattern = "White & Asian", replacement = "White and Asian", as.character(adultDF$Ethnicity)))
+adultDF$Ethnicity <- as.factor(gsub(pattern = "White & Black Caribbean", replacement = "White and Black Carribean", as.character(adultDF$Ethnicity)))
+adultDF$Ethnicity <- as.factor(gsub(pattern = "Not given", replacement = "Not stated", as.character(adultDF$Ethnicity)))
+adultDF$Ethnicity <- as.factor(gsub(pattern = "Other ethnic group (please state)", replacement = "Other ethnic group", as.character(adultDF$Ethnicity)))
+adultDF$Ethnicity <- as.factor(gsub(pattern = "Other Black Background", replacement = "Black - other", as.character(adultDF$Ethnicity)))
+adultDF$Ethnicity <- as.factor(gsub(pattern = "Other Asian Background", replacement = "Asian - other", as.character(adultDF$Ethnicity)))
+# Assault type 1. Adults
+adultDF$Assault.type.1 <- as.factor(gsub(pattern = "Vaginal rape", replacement = "Penile Vaginal", as.character(adultDF$Assault.type.1)))
+adultDF$Assault.type.1 <- as.factor(gsub(pattern = "Anal rape", replacement = "Penile Anal", as.character(adultDF$Assault.type.1)))
+adultDF$Assault.type.1 <- as.factor(gsub(pattern = "Oral rape", replacement = "Penile Oral", as.character(adultDF$Assault.type.1)))
+adultDF$Assault.type.1 <- as.factor(gsub(pattern = "unknown", replacement = "Unknown", as.character(adultDF$Assault.type.1)))
+# Assault type 2. Adults
+adultDF$Assault.type.2 <- as.factor(gsub(pattern = "Vaginal rape", replacement = "Penile Vaginal", as.character(adultDF$Assault.type.2)))
+adultDF$Assault.type.2 <- as.factor(gsub(pattern = "Anal rape", replacement = "Penile Anal", as.character(adultDF$Assault.type.2)))
+adultDF$Assault.type.2 <- as.factor(gsub(pattern = "Oral rape", replacement = "Penile Oral", as.character(adultDF$Assault.type.2)))
+adultDF$Assault.type.2 <- as.factor(gsub(pattern = "unknown", replacement = "Unknown", as.character(adultDF$Assault.type.2)))
+# Assault type 3. Adults
+adultDF$Assault.type.3 <- as.factor(gsub(pattern = "Vaginal rape", replacement = "Penile Vaginal", as.character(adultDF$Assault.type.3)))
+adultDF$Assault.type.3 <- as.factor(gsub(pattern = "Anal rape", replacement = "Penile Anal", as.character(adultDF$Assault.type.3)))
+adultDF$Assault.type.3 <- as.factor(gsub(pattern = "Oral rape", replacement = "Penile Oral", as.character(adultDF$Assault.type.3)))
+adultDF$Assault.type.3 <- as.factor(gsub(pattern = "unknown", replacement = "Unknown", as.character(adultDF$Assault.type.3)))
+# Assault type 4. Adults
+adultDF$Assault.type.4 <- as.factor(gsub(pattern = "Vaginal rape", replacement = "Penile Vaginal", as.character(adultDF$Assault.type.4)))
+adultDF$Assault.type.4 <- as.factor(gsub(pattern = "Anal rape", replacement = "Penile Anal", as.character(adultDF$Assault.type.4)))
+adultDF$Assault.type.4 <- as.factor(gsub(pattern = "Oral rape", replacement = "Penile Oral", as.character(adultDF$Assault.type.4)))
+adultDF$Assault.type.4 <- as.factor(gsub(pattern = "unknown", replacement = "Unknown", as.character(adultDF$Assault.type.4)))
+# Area of residence. Adults
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Blakeley", replacement = "Blackley", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Bury", replacement = "GM-Bury", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Bolton", replacement = "GM-Bolton", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Chorlton", replacement = "GM-Chorlton", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Eccles", replacement = "GM-Eccles", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Fallowfield", replacement = "GM-Fallowfield", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Fuckinfield", replacement = "Duckingfield", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Hulme", replacement = "GM-Hulme", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Longsight", replacement = "GM-Longsight", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Moss Side", replacement = "GM-Moss Side", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Old Trafford", replacement = "GM-Old Trafford", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Oldham", replacement = "GM-Oldham", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Prestwich", replacement = "GM-Prestwich", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Rochdale", replacement = "GM-Rochdale", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Rusholme", replacement = "GM-Rusholme", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Sale", replacement = "GM-Sale", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Salford", replacement = "GM-Salford", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Stockport", replacement = "GM-Stockport", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Victoria Park", replacement = "GM-Victoria Park", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Wigan", replacement = "GM-Wigan", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "Withenshawe", replacement = "Wythenshawe", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "GM Salford", replacement = "GM-Salford", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "No fixed above", replacement = "Other", as.character(adultDF$Area.of.residence)))
+
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "GM-GM-Bolton", replacement = "GM-Bolton", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "GM-GM-Rochdale", replacement = "GM-Rochdale", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "GM-GM-Wigan", replacement = "GM-Wigan", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "GM-GM-Bury", replacement = "GM-Bury", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "GM-GM-Salford", replacement = "GM-Salford", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "GM GM-Salford", replacement = "GM-Salford", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "GM-GM-Oldham", replacement = "GM-Oldham", as.character(adultDF$Area.of.residence)))
+adultDF$Area.of.residence <- as.factor(gsub(pattern = "GM-GM-Stockport", replacement = "GM-Stockport", as.character(adultDF$Area.of.residence)))
+
+# Substitue values  that mean the same in vars
+# Ethnicity child
+childDF$Ethnicity <- as.factor(gsub(pattern = "White - other", replacement = "White Other", as.character(childDF$Ethnicity)))
+childDF$Ethnicity <- as.factor(gsub(pattern = "White - British", replacement = "White British", as.character(childDF$Ethnicity)))
+childDF$Ethnicity <- as.factor(gsub(pattern = "White - Irish", replacement = "White Irish", as.character(childDF$Ethnicity)))
+childDF$Ethnicity <- as.factor(gsub(pattern = "White & Asian", replacement = "White and Asian", as.character(childDF$Ethnicity)))
+childDF$Ethnicity <- as.factor(gsub(pattern = "White & Black Caribbean", replacement = "White and Black Carribean", as.character(childDF$Ethnicity)))
+childDF$Ethnicity <- as.factor(gsub(pattern = "Not given", replacement = "Not stated", as.character(childDF$Ethnicity)))
+childDF$Ethnicity <- as.factor(gsub(pattern = "Other ethnic group (please state)", replacement = "Other ethnic group", as.character(childDF$Ethnicity)))
+childDF$Ethnicity <- as.factor(gsub(pattern = "Other Black Background", replacement = "Black - other", as.character(childDF$Ethnicity)))
+childDF$Ethnicity <- as.factor(gsub(pattern = "Other Asian Background", replacement = "Asian - other", as.character(childDF$Ethnicity)))
+# Assault type 1. child
+childDF$Assault.type.1 <- as.factor(gsub(pattern = "Vaginal rape", replacement = "Penile Vaginal", as.character(childDF$Assault.type.1)))
+childDF$Assault.type.1 <- as.factor(gsub(pattern = "Anal rape", replacement = "Penile Anal", as.character(childDF$Assault.type.1)))
+childDF$Assault.type.1 <- as.factor(gsub(pattern = "Oral rape", replacement = "Penile Oral", as.character(childDF$Assault.type.1)))
+childDF$Assault.type.1 <- as.factor(gsub(pattern = "unknown", replacement = "Unknown", as.character(childDF$Assault.type.1)))
+# Assault type 2. child
+childDF$Assault.type.2 <- as.factor(gsub(pattern = "Vaginal rape", replacement = "Penile Vaginal", as.character(childDF$Assault.type.2)))
+childDF$Assault.type.2 <- as.factor(gsub(pattern = "Anal rape", replacement = "Penile Anal", as.character(childDF$Assault.type.2)))
+childDF$Assault.type.2 <- as.factor(gsub(pattern = "Oral rape", replacement = "Penile Oral", as.character(childDF$Assault.type.2)))
+childDF$Assault.type.2 <- as.factor(gsub(pattern = "unknown", replacement = "Unknown", as.character(childDF$Assault.type.2)))
+# Assault type 3. Adults
+childDF$Assault.type.3 <- as.factor(gsub(pattern = "Vaginal rape", replacement = "Penile Vaginal", as.character(childDF$Assault.type.3)))
+childDF$Assault.type.3 <- as.factor(gsub(pattern = "Anal rape", replacement = "Penile Anal", as.character(childDF$Assault.type.3)))
+childDF$Assault.type.3 <- as.factor(gsub(pattern = "Oral rape", replacement = "Penile Oral", as.character(childDF$Assault.type.3)))
+childDF$Assault.type.3 <- as.factor(gsub(pattern = "unknown", replacement = "Unknown", as.character(childDF$Assault.type.3)))
+# Assault type 4. child
+childDF$Assault.type.4 <- as.factor(gsub(pattern = "Vaginal rape", replacement = "Penile Vaginal", as.character(childDF$Assault.type.4)))
+childDF$Assault.type.4 <- as.factor(gsub(pattern = "Anal rape", replacement = "Penile Anal", as.character(childDF$Assault.type.4)))
+childDF$Assault.type.4 <- as.factor(gsub(pattern = "Oral rape", replacement = "Penile Oral", as.character(childDF$Assault.type.4)))
+childDF$Assault.type.4 <- as.factor(gsub(pattern = "unknown", replacement = "Unknown", as.character(childDF$Assault.type.4)))
+# Area of residence. child
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Blakeley", replacement = "Blackley", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Bury", replacement = "GM-Bury", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Bolton", replacement = "GM-Bolton", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Chorlton", replacement = "GM-Chorlton", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Eccles", replacement = "GM-Eccles", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Fallowfield", replacement = "GM-Fallowfield", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Fuckinfield", replacement = "Duckingfield", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Hulme", replacement = "GM-Hulme", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Longsight", replacement = "GM-Longsight", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Moss Side", replacement = "GM-Moss Side", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Old Trafford", replacement = "GM-Old Trafford", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Oldham", replacement = "GM-Oldham", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Prestwich", replacement = "GM-Prestwich", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Rochdale", replacement = "GM-Rochdale", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Rusholme", replacement = "GM-Rusholme", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Sale", replacement = "GM-Sale", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Salford", replacement = "GM-Salford", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Stockport", replacement = "GM-Stockport", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Victoria Park", replacement = "GM-Victoria Park", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Wigan", replacement = "GM-Wigan", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "Withenshawe", replacement = "Wythenshawe", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "GM Salford", replacement = "GM-Salford", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "No fixed above", replacement = "Other", as.character(childDF$Area.of.residence)))
+
+childDF$Area.of.residence <- as.factor(gsub(pattern = "GM-GM-Bolton", replacement = "GM-Bolton", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "GM-GM-Rochdale", replacement = "GM-Rochdale", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "GM-GM-Wigan", replacement = "GM-Wigan", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "GM-GM-Bury", replacement = "GM-Bury", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "GM-GM-Salford", replacement = "GM-Salford", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "GM GM-Salford", replacement = "GM-Salford", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "GM-GM-Oldham", replacement = "GM-Oldham", as.character(childDF$Area.of.residence)))
+childDF$Area.of.residence <- as.factor(gsub(pattern = "GM-GM-Stockport", replacement = "GM-Stockport", as.character(childDF$Area.of.residence)))
+
+# Referrer NAs breakdown. Adults & Child
+data.frame("Number of NAs: Referrer"= rbind(
+  "Adult Dec-May" = nrow(ad_dec_sub[is.na(ad_dec_sub$Referrer), ]),
+  "Adult June-Nov" = nrow(ad_jun_sub[is.na(ad_jun_sub$Referrer), ]),
+  "Children Dec-May" = nrow(ch_dec_sub[is.na(ch_dec_sub$Referrer), ]),
+  "Children June-Nov" = nrow(ch_jun_sub[is.na(ch_jun_sub$Referrer), ])
+  )
+)
+
+# LDSQ detailed str and histogram
+theme_set(theme_classic())
+
+ggplot(data = adultDF) +
+  geom_bar(mapping = aes(x=LDSQ..), width = 0.5, show.legend = FALSE) +
+  theme(axis.text.x = element_text(angle = 70, vjust = 0.5)) +
+  labs(title = "LDSQ count")
+
+select(adultDF, LDSQ..) %>% group_by(LDSQ..) %>% summary(maxsum = 20)
+
+# LDSQ NAs breakdown. Adults
+data.frame("Number of NAs: LDSQ/CAIDS"= rbind(
+  "Adult Dec-May" = nrow(ad_dec_sub[is.na(ad_dec_sub$LDSQ..), ]),
+  "Adult June-Nov" = nrow(ad_jun_sub[is.na(ad_jun_sub$LDSQ..), ]),
+  "Children Dec-May" = nrow(ch_dec_sub[is.na(ch_dec_sub$CAIDSQ..), ]),
+  "Children June-Nov" = nrow(ch_jun_sub[is.na(ch_jun_sub$CAIDSQ..), ])
+  )
+)
+
+# Gender NAs breakdown. Child
+data.frame("Number of NAs: Gender"= rbind(
+  "Adult Dec-May" = nrow(ad_dec_sub[is.na(ad_dec_sub$Gender), ]),
+  "Adult June-Nov" = nrow(ad_jun_sub[is.na(ad_jun_sub$Gender), ]),
+  "Children Dec-May" = nrow(ch_dec_sub[is.na(ch_dec_sub$Gender), ]),
+  "Children June-Nov" = nrow(ch_jun_sub[is.na(ch_jun_sub$Gender), ])
+  )
+)
+
+# DV.history breakdown in children. What children show DV.history and are 15 yo or less?
+select(childDF, DV.history, Age) %>% na.omit() %>% filter(Age > 15 & DV.history == "Yes") %>% nrow()
+select(childDF, DV.history, Age) %>% na.omit() %>% filter(Age <= 15 & DV.history == "Yes") %>% nrow()
+
+# DV.history NAs breakdown. Children
+data.frame("Number of NAs: LDSQ/CAIDS"= rbind(
+  "Children Dec-May" = nrow(ch_dec_sub[is.na(ch_dec_sub$DV.history), ]),
+  "Children June-Nov" = nrow(ch_jun_sub[is.na(ch_jun_sub$DV.history), ])
+  )
+)
+# If we considered the last as not appropriateand exclude them from the measure (without assigning NAs) then the overall number of NAs would be less. The number of new hypothetical NAs in DV.history would be:
+nrow(childDF[is.na(childDF$DV.history), ]) - select(childDF, DV.history, Age) %>% na.omit() %>% filter(Age <= 15 & DV.history == "Yes") %>% nrow()
+
+# CAIDS detailed distribution
+ggplot(data = childDF) +
+  geom_bar(mapping = aes(x=CAIDSQ..), width = 0.5, show.legend = FALSE) +
+  theme(axis.text.x = element_text(angle = 70, vjust = 0.5)) +
+  labs(title = "CAIDSQ scores distribution")
+
+select(childDF, CAIDSQ..) %>% group_by(CAIDSQ..) %>% summary(maxsum = 20)
+
+# Area of residence. Child
+ggplot(data = childDF) +
+  geom_bar(mapping = aes(x=Area.of.residence), width = 0.5, show.legend = FALSE) +
+  theme(axis.text.x = element_text(angle = 70, vjust = 0.5)) +
+  labs(title = "Area of residence. Children")
+
+# Area of residence. Children and adults detailed
+data.frame("Adults"=summary(group_by(select(adultDF, Area.of.residence), Area.of.residence), maxsum = 120))
+data.frame("Children"=summary(group_by(select(childDF, Area.of.residence), Area.of.residence), maxsum = 86))
+
+
+
+
+
+
 
 
 
