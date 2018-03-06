@@ -628,3 +628,109 @@ data.frame("Children"=summary(group_by(select(childDF, Area.of.residence), Area.
 
 
 
+
+
+# 8. More data cleaning for 5-11 Mar ------------------------------------
+# Unique values or levels in vars
+check_uniques <- function(data_in) {
+  
+  uniq_list <- list()
+  for (i in 1:length(names(adultDF))) {
+  uniq_list <- c(list(as.character(unique(data_in[, i]))), uniq_list)
+  }
+  names(uniq_list) <- names(data_in)
+  return(uniq_list)
+}
+check_uniques(adultDF)
+# Corrections
+# Digital penetration = Digital Anal + Digital Vaginal
+# Object penetration = Object / Anal
+adultDF$Assault.type.1 <- as.factor(gsub(pattern = "Digital Vaginal", replacement = "Digital penetration", as.character(adultDF$Assault.type.1)))
+adultDF$Assault.type.1 <- as.factor(gsub(pattern = "Digital Anal", replacement = "Digital penetration", as.character(adultDF$Assault.type.1)))
+adultDF$Assault.type.1 <- as.factor(gsub(pattern = "Object / Anal", replacement = "Object penetration", as.character(adultDF$Assault.type.1)))
+adultDF$Assault.type.1 <- as.factor(gsub(pattern = "Object / Vaginal", replacement = "Object penetration", as.character(adultDF$Assault.type.1)))
+
+
+adultDF$Assault.type.2 <- as.factor(gsub(pattern = "Digital Vaginal", replacement = "Digital penetration", as.character(adultDF$Assault.type.2)))
+adultDF$Assault.type.2 <- as.factor(gsub(pattern = "Digital Anal", replacement = "Digital penetration", as.character(adultDF$Assault.type.2)))
+adultDF$Assault.type.2 <- as.factor(gsub(pattern = "Object / Anal", replacement = "Object penetration", as.character(adultDF$Assault.type.2)))
+adultDF$Assault.type.2 <- as.factor(gsub(pattern = "Object / Vaginal", replacement = "Object penetration", as.character(adultDF$Assault.type.2)))
+
+adultDF$Assault.type.3 <- as.factor(gsub(pattern = "Digital Vaginal", replacement = "Digital penetration", as.character(adultDF$Assault.type.3)))
+adultDF$Assault.type.3 <- as.factor(gsub(pattern = "Digital Anal", replacement = "Digital penetration", as.character(adultDF$Assault.type.3)))
+adultDF$Assault.type.3 <- as.factor(gsub(pattern = "Object / Anal", replacement = "Object penetration", as.character(adultDF$Assault.type.3)))
+adultDF$Assault.type.3 <- as.factor(gsub(pattern = "Object / Vaginal", replacement = "Object penetration", as.character(adultDF$Assault.type.3)))
+
+adultDF$Assault.type.4 <- as.factor(gsub(pattern = "Digital Vaginal", replacement = "Digital penetration", as.character(adultDF$Assault.type.4)))
+adultDF$Assault.type.4 <- as.factor(gsub(pattern = "Digital Anal", replacement = "Digital penetration", as.character(adultDF$Assault.type.4)))
+adultDF$Assault.type.4 <- as.factor(gsub(pattern = "Object / Anal", replacement = "Object penetration", as.character(adultDF$Assault.type.4)))
+adultDF$Assault.type.4 <- as.factor(gsub(pattern = "Object / Vaginal", replacement = "Object penetration", as.character(adultDF$Assault.type.4)))
+
+levels(adultDF$Relationship.to.alleged.perp.)[levels(adultDF$Relationship.to.alleged.perp.)== "Client ( sex worker)"] <- "Client (sex worker)"
+adultDF$Relationship.to.alleged.perp. <- as.factor(gsub(pattern = "Brother-in-law", replacement = "Brother in law", as.character(adultDF$Relationship.to.alleged.perp.)))
+adultDF$Relationship.to.alleged.perp. <- as.factor(gsub(pattern = "Acquaitnace > 24 hours", replacement = "Acquaintance > 24 hours", as.character(adultDF$Relationship.to.alleged.perp.)))
+adultDF$Relationship.to.alleged.perp. <- as.factor(gsub(pattern = "Male Cousin", replacement = "Cousin", as.character(adultDF$Relationship.to.alleged.perp.)))
+adultDF$Relationship.to.alleged.perp. <- as.factor(gsub(pattern = "Aquaintance >24 hours ", replacement = "Acquaintance > 24 hours", as.character(adultDF$Relationship.to.alleged.perp.)))
+
+adultDF$DV.history <- as.factor(gsub(pattern = "None", replacement = "No", as.character(adultDF$DV.history )))
+
+levels(adultDF$Religion)[levels(adultDF$Religion)== "Other (please state)"] <- "Other"
+
+levels(adultDF$Ethnicity)[levels(adultDF$Ethnicity)== "Other ethnic group (Other ethnic group)"] <- "Other ethnic group"
+# Check rows with age < 18
+adult_not18 <- adultDF[which(adultDF$Age < 18) ,]  # belong to childDF
+adultDF_back <- adultDF
+adultDF <- adultDF[-c(which(adultDF$Age < 18)) ,]
+
+# Do same with childDF
+check_uniques(childDF)
+
+childDF$Assault.type.1 <- as.factor(gsub(pattern = "Digital Vaginal", replacement = "Digital penetration", as.character(childDF$Assault.type.1)))
+childDF$Assault.type.1 <- as.factor(gsub(pattern = "Digital Anal", replacement = "Digital penetration", as.character(childDF$Assault.type.1)))
+childDF$Assault.type.1 <- as.factor(gsub(pattern = "Object / Anal", replacement = "Object penetration", as.character(childDF$Assault.type.1)))
+childDF$Assault.type.1 <- as.factor(gsub(pattern = "Object / Vaginal", replacement = "Object penetration", as.character(childDF$Assault.type.1)))
+childDF$Assault.type.1 <- as.factor(gsub(pattern = "Digital", replacement = "Digital penetration", as.character(childDF$Assault.type.1)))
+
+childDF$Assault.type.2 <- as.factor(gsub(pattern = "Digital Vaginal", replacement = "Digital penetration", as.character(childDF$Assault.type.2)))
+childDF$Assault.type.2 <- as.factor(gsub(pattern = "Digital Anal", replacement = "Digital penetration", as.character(childDF$Assault.type.2)))
+childDF$Assault.type.2 <- as.factor(gsub(pattern = "Object / Anal", replacement = "Object penetration", as.character(childDF$Assault.type.2)))
+childDF$Assault.type.2 <- as.factor(gsub(pattern = "Object / Vaginal", replacement = "Object penetration", as.character(childDF$Assault.type.2)))
+childDF$Assault.type.2 <- as.factor(gsub(pattern = "Digital", replacement = "Digital penetration", as.character(childDF$Assault.type.2)))
+
+childDF$Assault.type.3 <- as.factor(gsub(pattern = "Digital Vaginal", replacement = "Digital penetration", as.character(childDF$Assault.type.3)))
+childDF$Assault.type.3 <- as.factor(gsub(pattern = "Digital Anal", replacement = "Digital penetration", as.character(childDF$Assault.type.3)))
+childDF$Assault.type.3 <- as.factor(gsub(pattern = "Object / Anal", replacement = "Object penetration", as.character(childDF$Assault.type.3)))
+childDF$Assault.type.3 <- as.factor(gsub(pattern = "Object / Vaginal", replacement = "Object penetration", as.character(childDF$Assault.type.3)))
+childDF$Assault.type.3 <- as.factor(gsub(pattern = "Digital", replacement = "Digital penetration", as.character(childDF$Assault.type.3)))
+
+childDF$Assault.type.4 <- as.factor(gsub(pattern = "Digital Vaginal", replacement = "Digital penetration", as.character(childDF$Assault.type.4)))
+childDF$Assault.type.4 <- as.factor(gsub(pattern = "Digital Anal", replacement = "Digital penetration", as.character(childDF$Assault.type.4)))
+childDF$Assault.type.4 <- as.factor(gsub(pattern = "Object / Anal", replacement = "Object penetration", as.character(childDF$Assault.type.4)))
+childDF$Assault.type.4 <- as.factor(gsub(pattern = "Object / Vaginal", replacement = "Object penetration", as.character(childDF$Assault.type.4)))
+childDF$Assault.type.4 <- as.factor(gsub(pattern = "Digital", replacement = "Digital penetration", as.character(childDF$Assault.type.4)))
+
+childDF$Relationship.to.alleged.perp. <- as.factor(gsub(pattern = "Client ( sex worker)", replacement = "Client (sex worker)", as.character(childDF$Relationship.to.alleged.perp.)))
+childDF$Relationship.to.alleged.perp. <- as.factor(gsub(pattern = "Brother-in-law", replacement = "Brother in law", as.character(childDF$Relationship.to.alleged.perp.)))
+childDF$Relationship.to.alleged.perp. <- as.factor(gsub(pattern = "Acquaitnace > 24 hours", replacement = "Acquaintance > 24 hours", as.character(childDF$Relationship.to.alleged.perp.)))
+childDF$Relationship.to.alleged.perp. <- as.factor(gsub(pattern = "Male Cousin", replacement = "Cousin", as.character(childDF$Relationship.to.alleged.perp.)))
+childDF$Relationship.to.alleged.perp. <- as.factor(gsub(pattern = "Aquaintance >24 hours ", replacement = "Acquaintance > 24 hours", as.character(childDF$Relationship.to.alleged.perp.)))
+
+childDF$DV.history <- as.factor(gsub(pattern = "None", replacement = "No", as.character(childDF$DV.history )))
+
+levels(childDF$Assault.type.1)[levels(childDF$Assault.type.1)== "Digital penetration penetration"] <- "Digital penetration"
+levels(childDF$Assault.type.1)[levels(childDF$Assault.type.1)== "sexual touching"] <- "Sexual touching"
+levels(childDF$Assault.type.2)[levels(childDF$Assault.type.2)== "Digital penetration penetration"] <- "Digital penetration"
+levels(childDF$Assault.type.3)[levels(childDF$Assault.type.3)== "Digital penetration penetration"] <- "Digital penetration"
+levels(childDF$Assault.type.4)[levels(childDF$Assault.type.4)== "Digital penetration penetration"] <- "Digital penetration"
+
+levels(childDF$Relationship.to.alleged.perp.)[levels(childDF$Relationship.to.alleged.perp.)== "Step brother"] <- "Step Brother"
+levels(childDF$Relationship.to.alleged.perp.)[levels(childDF$Relationship.to.alleged.perp.)== "Acquaintance >24 hours"] <- "Acquaintance > 24 hours"
+levels(childDF$Relationship.to.alleged.perp.)[levels(childDF$Relationship.to.alleged.perp.)== "Aunty"] <- "Aunt"
+levels(childDF$Relationship.to.alleged.perp.)[levels(childDF$Relationship.to.alleged.perp.)== "Step father"] <- "Step Father"
+
+levels(childDF$Ethnicity)[levels(childDF$Ethnicity)== "Other ethnic group (please state)"] <- "Other ethnic group"
+levels(childDF$Ethnicity)[levels(childDF$Ethnicity)== "White Britishn"] <- "White British"
+levels(childDF$Ethnicity)[levels(childDF$Ethnicity)== "White & Black African"] <- "White and Black African"
+
+
+
